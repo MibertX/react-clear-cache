@@ -75,33 +75,30 @@ export const useClearCache = (props?: OwnProps) => {
   const baseUrl = basePath.replace(/\/+$/, '') + '/' + filename;
 
   function fetchMeta() {
-    try {
-      fetch(baseUrl, {
-        cache: 'no-store'
-      })
-        .then(response => response.json())
-        .then(meta => {
-          const newVersion = meta.version;
-          const currentVersion = appVersion;
-          const isUpdated = newVersion === currentVersion;
-          if (!isUpdated && !auto) {
-            setLatestVersion(newVersion);
-            setLoading(false);
-            if (appVersion) {
-              setIsLatestVersion(false);
-            } else {
-              setVersion(newVersion);
-            }
-          } else if (!isUpdated && auto) {
-            emptyCacheStorage(newVersion);
+    fetch(baseUrl, {
+      cache: 'no-store'
+    })
+      .then(response => response.json())
+      .then(meta => {
+        const newVersion = meta.version;
+        const currentVersion = appVersion;
+        const isUpdated = newVersion === currentVersion;
+        if (!isUpdated && !auto) {
+          setLatestVersion(newVersion);
+          setLoading(false);
+          if (appVersion) {
+            setIsLatestVersion(false);
           } else {
-            setIsLatestVersion(true);
-            setLoading(false);
+            setVersion(newVersion);
           }
-        });
-    } catch (err) {
-      console.error(err);
-    }
+        } else if (!isUpdated && auto) {
+          emptyCacheStorage(newVersion);
+        } else {
+          setIsLatestVersion(true);
+          setLoading(false);
+        }
+      })
+      .catch(err => console.error(err))
   }
 
   React.useEffect(() => {
