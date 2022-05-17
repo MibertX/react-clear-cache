@@ -78,7 +78,7 @@ export const useClearCache = (props?: OwnProps) => {
     fetch(baseUrl, {
       cache: 'no-store'
     })
-      .then(response => response.json())
+      .then(response => response.json().catch(error => console.warn(error)))
       .then(meta => {
         const newVersion = meta.version;
         const currentVersion = appVersion;
