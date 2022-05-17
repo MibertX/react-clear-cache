@@ -98,7 +98,7 @@ export const useClearCache = (props?: OwnProps) => {
           setLoading(false);
         }
       })
-      .catch(err => console.error(err))
+      .catch(err => console.warn('react-clear-cache ERROR!', err))
   }
 
   React.useEffect(() => {
