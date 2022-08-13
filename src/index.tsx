@@ -53,10 +53,6 @@ export const useClearCache = (props?: OwnProps) => {
   const [isLatestVersion, setIsLatestVersion] = React.useState(true);
   const [latestVersion, setLatestVersion] = React.useState(appVersion);
 
-  async function setVersion(version: string) {
-    await setAppVersion(version);
-  }
-
   const emptyCacheStorage = async (version?: string) => {
     if ('caches' in window) {
       // Service worker cache should be cleared with caches.delete()
@@ -67,7 +63,7 @@ export const useClearCache = (props?: OwnProps) => {
     }
 
     // clear browser cache and reload page
-    await setVersion(version || latestVersion);
+    setAppVersion(version || latestVersion);
     window.location.replace(window.location.href);
   };
 
@@ -78,18 +74,18 @@ export const useClearCache = (props?: OwnProps) => {
     fetch(baseUrl, {
       cache: 'no-store'
     })
-      .then(response => response.json().catch(error => console.warn(error)))
+      .then(response => response && response.json().catch(error => console.warn(error)))
       .then(meta => {
-        const newVersion = meta.version;
+        const newVersion = meta && meta.version;
         const currentVersion = appVersion;
-        const isUpdated = newVersion === currentVersion;
+        const isUpdated = newVersion && newVersion === currentVersion;
         if (!isUpdated && !auto) {
           setLatestVersion(newVersion);
           setLoading(false);
           if (appVersion) {
             setIsLatestVersion(false);
           } else {
-            setVersion(newVersion);
+            setAppVersion(newVersion);
           }
         } else if (!isUpdated && auto) {
           emptyCacheStorage(newVersion);
