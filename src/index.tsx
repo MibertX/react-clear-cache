@@ -76,7 +76,7 @@ export const useClearCache = (props?: OwnProps) => {
     })
       .then(response => response && response.json().catch(error => console.warn(error)))
       .then(meta => {
-        const newVersion = meta && meta.version;
+        const newVersion = (meta && meta.version) || '';
         const currentVersion = appVersion;
         const isUpdated = newVersion && newVersion === currentVersion;
         if (!isUpdated && !auto) {
