@@ -47,8 +47,28 @@ export const useClearCache = (props?: OwnProps) => {
     ...defaultProps,
     ...props
   };
+
+  const getStorageKey = (): string => {
+    try {
+      const version = localStorage.getItem(storageKey);
+      if (!version) {
+        localStorage.removeItem(storageKey);
+        return storageKey;
+      }
+
+      JSON.parse(version);
+
+      return storageKey;
+    } catch (e) {
+      console.warn(e);
+      localStorage.removeItem(storageKey);
+
+      return storageKey;
+    }
+  }
+
   const [loading, setLoading] = React.useState(true);
-  const useAppVersionState = createPersistedState(storageKey);
+  const useAppVersionState = createPersistedState(getStorageKey());
   const [appVersion, setAppVersion] = useAppVersionState('');
   const [isLatestVersion, setIsLatestVersion] = React.useState(true);
   const [latestVersion, setLatestVersion] = React.useState(appVersion);
@@ -120,7 +140,8 @@ export const useClearCache = (props?: OwnProps) => {
   React.useEffect(() => {
     window.addEventListener('focus', startVersionCheck.current);
     window.addEventListener('blur', stopVersionCheck.current);
-    () => {
+
+    return () => {
       window.removeEventListener('focus', startVersionCheck.current);
       window.removeEventListener('blur', stopVersionCheck.current);
     };
